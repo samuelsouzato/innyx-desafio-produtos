@@ -10,28 +10,28 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        // 1. Valida se o usuário enviou email e senha
+        // Valida se o usuário enviou email e senha
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
 
-        // 2. Tenta fazer o login com os dados fornecidos
+        // Tenta fazer o login com os dados fornecidos
         if (Auth::attempt($credentials)) {
             /** @var \App\Models\User $user */
             $user = Auth::user();
             
-            // 3. Cria o token de acesso (Sanctum)
+            // Cria o token de acesso (Sanctum)
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            // 4. Devolve o token para o Front-end (Vue.js) guardar
+            // Devolve o token para o Front-end (Vue.js) guardar
             return response()->json([
                 'access_token' => $token,
                 'token_type' => 'Bearer',
             ]);
         }
 
-        // Se a senha estiver errada, devolve erro 401 (Não autorizado)
+        // Senha errada, devolve erro 401 (Não autorizado)
         return response()->json(['message' => 'Credenciais inválidas'], 401);
     }
 
