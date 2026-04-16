@@ -13,22 +13,16 @@ return new class extends Migration
     {
        Schema::create('products', function (Blueprint $table) {
         $table->id();
-        $table->string('name', 50);             // i. Nome (Máx 50)
-        $table->string('description', 200);      // ii. Descrição (Máx 200)
-        $table->double('price');                 // iii. Preço
-        $table->date('expiration_date');         // iv. Data de validade
-        $table->string('image')->unique();       // v. Imagem (nome único)
-        
-        // vi. Categoria relacionada (Chave Estrangeira)
+        $table->string('name', 50);             // Nome 
+        $table->string('description', 200);      // Descrição 
+        $table->double('price');                 // Preço
+        $table->date('expiration_date');         // Data de validade
+        $table->string('image')->unique();       // Imagem
         $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
-        
         $table->timestamps();
     });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('products');
