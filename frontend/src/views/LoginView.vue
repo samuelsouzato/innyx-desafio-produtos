@@ -18,13 +18,13 @@ const handleLogin = async () => {
   error.value = '';
   
   try {
-    // Chamada para o seu Laravel
-    const response = await api.post('/login', {
-      email: email.value,
-      password: password.value
-    });
+    
+    const response = await api.post('/login', { 
+  email: email.value,
+  password: password.value
+});
 
-    localStorage.setItem('token', response.data.token);
+    localStorage.setItem('token', response.data.access_token);
     
     router.push('/dashboard');
   } catch (err: any) {

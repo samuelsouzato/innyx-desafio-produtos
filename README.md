@@ -1,58 +1,113 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📦 Sistema de Gestão de Produtos - Fullstack
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Visão Geral
 
-## About Laravel
+Este projeto é uma **API RESTful** desenvolvida com **Laravel 11**, **MySQL** e **Docker (Sail)**, integrada a um frontend em **Vue 3**.  
+A aplicação segue padrões de arquitetura profissional, com autenticação **Sanctum**, gerenciamento de estado com **Pinia** e interface responsiva utilizando **Tailwind CSS 4** e **PrimeVue**.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📂 Estrutura do Projeto
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```
+/ 
+├── app/
+│   ├── Http/Controllers/  # Controllers da API (Produtos e Auth)
+│   └── Models/            # Entidades do Banco (Product, Category)
+├── database/
+│   ├── migrations/        # Estrutura do banco de dados
+│   └── seeders/           # Dados de teste (Admin e Categorias)
+├── routes/
+│   └── api.php            # Definição dos endpoints da API
+├── docker-compose.yml     # Configuração da infra (Sail)
+│
+└── frontend/              # Application VueJS
+    ├── src/
+    │   ├── services/      # Comunicação com API (Axios)
+    │   ├── stores/        # Pinia - Auth
+    │   └── views/         # Páginas (Login, Dashboard, Listagem)
+    └── package.json       # Dependências do Front
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Tecnologias Utilizadas
 
-## Contributing
+- PHP 8.5 / Laravel 11
+- MySQL (Docker)
+- Laravel Sail & Sanctum
+- Vue 3 (Composition API)
+- TypeScript & Vite
+- Tailwind CSS 4
+- PrimeVue
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Como Executar
 
-## Code of Conduct
+# 1. Pré-requisitos:
+- **Docker Desktop** rodando com WSL2 habilitado.
+- **Node.js 22** instalado no ambiente Linux/WSL.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 2. Clonar o repositório:
+```bash
+git clone [https://github.com/seu-usuario/seu-repositorio.git](https://github.com/seu-usuario/seu-repositorio.git)
+cd seu-repositorio
+```
 
-## Security Vulnerabilities
+# 3. Configurar ambiente (.env):
+```bash
+cp .env.example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 4. Instalar dependências e subir containers:
+```bash
+# Instala o Composer sem precisar de PHP local
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php83-composer:latest \
+    composer install --ignore-platform-reqs
 
-## License
+# Sobe os containers do Docker
+./vendor/bin/sail up -d
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 5. Inicializar Banco de Dados:
+```bash
+# Gera chave da aplicação
+./vendor/bin/sail artisan key:generate
+
+# Limpa o banco, cria tabelas e insere dados de teste
+./vendor/bin/sail artisan migrate:fresh --seed
+```
+
+# 6. Rodar o Frontend:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+# 7. Credenciais de Acesso:
+
+- **URL do Sistema:** http://localhost:5173
+- **Usuário Admin:** admin@innyx.com
+- **Senha:** admin1234
+
+# 8. Comandos Úteis do Sail:
+
+- Parar tudo: `./vendor/bin/sail stop`
+- Reiniciar containers: `./vendor/bin/sail restart`
+- Abrir terminal do banco: `./vendor/bin/sail mysql`
+
+# 9. Endpoints da API (Testar no Postman/Insomnia)
+
+- **POST** `/api/v1/login` -> Autenticação
+- **GET** `/api/v1/products` -> Listar produtos
+- **POST** `/api/v1/products` -> Criar produto
+- **PUT** `/api/v1/products/{id}` -> Editar produto
+- **DELETE** `/api/v1/products/{id}` -> Deletar produto
+
+# 10. Rodar Testes:
+```bash
+# Backend
+./vendor/bin/sail artisan test
+```
+
+## OBS: Se reiniciar o PC, basta rodar `./vendor/bin/sail up -d` na raiz e `npm run dev` na pasta frontend!
