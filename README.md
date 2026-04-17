@@ -3,60 +3,101 @@
 ## Visão Geral
 
 Este projeto é uma **API RESTful** desenvolvida com **Laravel 11**, **MySQL** e **Docker (Sail)**, integrada a um frontend em **Vue 3**.  
-A aplicação segue padrões de arquitetura profissional, com autenticação **Sanctum**, gerenciamento de estado com **Pinia** e interface responsiva utilizando **Tailwind CSS 4** e **PrimeVue**.
+A aplicação segue padrões de arquitetura profissional, utilizando o **Service Pattern** para isolar a lógica de negócio, autenticação **Sanctum**, gerenciamento de estado com **Pinia** e interface responsiva utilizando **Tailwind CSS 4** e **PrimeVue**.
 
 ## 📂 Estrutura do Projeto
 
-```
-/ 
+```text
+/
 ├── app/
-│   ├── Http/Controllers/  # Controllers da API (Produtos e Auth)
-│   └── Models/            # Entidades do Banco (Product, Category)
+│   ├── Http/Controllers/  # Controllers da API v1 (Auth, Product, Category)
+│   ├── Services/          # Service Pattern (ProductService - Lógica de Negócio)
+│   └── Models/            # Entidades do Banco (Product, Category, User)
 ├── database/
-│   ├── migrations/        # Estrutura do banco de dados
-│   └── seeders/           # Dados de teste (Admin e Categorias)
+│   ├── migrations/        # Estrutura do banco (campos nullable configurados)
+│   └── seeders/           # Dados de teste (Admin e 9 Categorias resumidas)
 ├── routes/
-│   └── api.php            # Definição dos endpoints da API
-├── docker-compose.yml     # Configuração da infra (Sail)
+│   └── api.php            # Definição dos endpoints da API protegidos
+├── compose.yaml           # Configuração da infra Docker (Sail)
 │
-└── frontend/              # Application VueJS
+└── frontend/
     ├── src/
     │   ├── services/      # Comunicação com API (Axios)
-    │   ├── stores/        # Pinia - Auth
-    │   └── views/         # Páginas (Login, Dashboard, Listagem)
-    └── package.json       # Dependências do Front
+    │   ├── stores/        # Pinia (Gerenciamento de Auth e Estado)
+    │   ├── router/        # Gerenciamento de rotas SPA
+    │   └── views/         # Páginas (LoginView, DashboardView)
+    └── package.json       # Dependências (PrimeVue, Tailwind 4, Pinia)
 ```
 
 ## Tecnologias Utilizadas
 
-- PHP 8.5 / Laravel 11
-- MySQL (Docker)
-- Laravel Sail & Sanctum
-- Vue 3 (Composition API)
-- TypeScript & Vite
-- Tailwind CSS 4
-- PrimeVue
+- **Backend:** PHP 8.5 / Laravel 11  
+- **Banco de Dados:** MySQL 8.4 (Docker)  
+- **Infra:** Laravel Sail & Adminer (Gestão Web do Banco)  
+- **Frontend:** Vue 3 (Composition API) / Vite  
+- **TypeScript:** Tipagem estática no frontend  
+- **Gerenciamento de Estado:** Pinia  
+- **Estilização:** Tailwind CSS 4 & PrimeVue  
 
-# Como Executar
+---
 
-# 1. Pré-requisitos:
+## Como Executar (Passo a Passo Completo):
+
+# Pré-requesitos:
 - **Docker Desktop** rodando com WSL2 habilitado.
-- **Node.js 22** instalado no ambiente Linux/WSL.
 
-# 2. Clonar o repositório:
+### Ambiente  Linux (WSL2)
+
+No Windows, abra o PowerShell como Administrador:
+
 ```bash
-git clone [https://github.com/seu-usuario/seu-repositorio.git](https://github.com/seu-usuario/seu-repositorio.git)
-cd seu-repositorio
+wsl --install
 ```
 
-# 3. Configurar ambiente (.env):
+(Reinicie o computador após a instalação. Ao abrir o Ubuntu pela primeira vez, configure usuário e senha.)
+
+#### Garantindo WSL 2
+
+```bash
+wsl --set-default-version 2
+wsl -l -v
+wsl --set-version Ubuntu 2
+```
+
+---
+
+### Configurar o Docker Desktop
+
+- Instale o Docker Desktop  
+- Vá em **Settings > General** → ative *Use the WSL 2 based engine*  
+- Vá em **Resources > WSL Integration** → ative o Ubuntu  
+- Clique em *Apply & Restart*
+
+---
+
+### 1. Clonar o Repositório (dentro do Linux)
+
+```bash
+cd ~
+
+git clone https://github.com/samuelsouzato/innyx-desafio-produtos.git
+
+cd innyx-desafio-produtos
+```
+
+---
+
+### 2. Configurar ambiente
+
 ```bash
 cp .env.example .env
 ```
 
-# 4. Instalar dependências e subir containers:
+---
+
+### 3. Instalar dependências e subir containers
+
 ```bash
-# Instala o Composer sem precisar de PHP local
 docker run --rm \
     -u "$(id -u):$(id -g)" \
     -v "$(pwd):/var/www/html" \
@@ -64,50 +105,92 @@ docker run --rm \
     laravelsail/php83-composer:latest \
     composer install --ignore-platform-reqs
 
-# Sobe os containers do Docker
 ./vendor/bin/sail up -d
 ```
+- Demora em torno de 15 minutos.
+---
 
-# 5. Inicializar Banco de Dados:
+### 4. Inicializar Banco de Dados e Storage
+
 ```bash
-# Gera chave da aplicação
 ./vendor/bin/sail artisan key:generate
 
-# Limpa o banco, cria tabelas e insere dados de teste
-./vendor/bin/sail artisan migrate:fresh --seed
+./vendor/bin/sail artisan migrate:refresh --seed
+
+./vendor/bin/sail artisan storage:link
 ```
 
-# 6. Rodar o Frontend:
+---
+
+### 5. Rodar o Frontend
+
 ```bash
-cd frontend
-npm install
-npm run dev
+./vendor/bin/sail npm --prefix frontend install
+./vendor/bin/sail npm --prefix frontend run dev -- --host
 ```
 
-# 7. Credenciais de Acesso:
+---
 
-- **URL do Sistema:** http://localhost:5173
-- **Usuário Admin:** admin@innyx.com
-- **Senha:** admin1234
+### 6. Credenciais de Acesso
 
-# 8. Comandos Úteis do Sail:
+- **URL:** http://localhost:5173  
+- **Usuário:** admin@innyx.com  
+- **Senha:** admin1234  
 
-- Parar tudo: `./vendor/bin/sail stop`
-- Reiniciar containers: `./vendor/bin/sail restart`
-- Abrir terminal do banco: `./vendor/bin/sail mysql`
+---
 
-# 9. Endpoints da API (Testar no Postman/Insomnia)
+## Funcionalidades e Diferenciais
 
-- **POST** `/api/v1/login` -> Autenticação
-- **GET** `/api/v1/products` -> Listar produtos
-- **POST** `/api/v1/products` -> Criar produto
-- **PUT** `/api/v1/products/{id}` -> Editar produto
-- **DELETE** `/api/v1/products/{id}` -> Deletar produto
+- **UX Inteligente (Alimentos):**  
+  Categoria "Alimentos" exige validade automaticamente.
 
-# 10. Rodar Testes:
+- **Service Pattern:**  
+  Lógica centralizada no `ProductService`, incluindo validações e upload de imagens.
+
+- **Tratamento de Preço:**  
+  Aceita vírgula (BR) e converte para padrão SQL automaticamente.
+
+- **Dashboard Premium:**  
+  Paginação (5 itens), busca com debounce e filtros inteligentes.
+
+- **Flexibilidade:**  
+  Campos opcionais (nullable), respeitando regras de negócio.
+
+---
+
+## Comandos Úteis do Sail
+
 ```bash
-# Backend
-./vendor/bin/sail artisan test
+./vendor/bin/sail stop
+./vendor/bin/sail restart
+./vendor/bin/sail mysql
 ```
 
-## OBS: Se reiniciar o PC, basta rodar `./vendor/bin/sail up -d` na raiz e `npm run dev` na pasta frontend!
+- **Adminer:** http://localhost:8080  
+    - Server/Host: mysql  
+    - User: sail  
+    - Pass: password  
+
+---
+
+## Endpoints da API (v1)
+
+- **POST** `/api/v1/login` → Autenticação e token  
+- **GET** `/api/v1/products` → Listagem (paginado/busca)  
+- **POST** `/api/v1/products` → Criar produto  
+- **PUT** `/api/v1/products/{id}` → Atualizar produto  
+- **DELETE** `/api/v1/products/{id}` → Remover produto  
+
+---
+
+## Observação
+
+Se reiniciar o PC:
+
+```bash
+cd ~/innyx-desafio-produtos
+
+./vendor/bin/sail up -d
+
+./vendor/bin/sail npm --prefix frontend run dev -- --host
+```
