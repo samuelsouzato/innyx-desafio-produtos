@@ -30,5 +30,9 @@ class Product extends Model
         get: fn ($value) => $value ? asset('storage/' . $value) : null,
     );
 }
+public function category()
+{
+    return $this->belongsTo(Category::class);
+}
     
 }

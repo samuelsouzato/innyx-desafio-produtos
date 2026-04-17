@@ -23,9 +23,21 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('admin1234'), 
         ]);
 
-    \App\Models\Category::create(['name' => 'Eletronicos']);
-    \App\Models\Category::create(['name' => 'Alimentos']);
-    \App\Models\Category::create(['name' => 'Limpeza']);
-    \App\Models\Category::create(['name' => 'Bebidas']);
-    }
+    
+   $categories = [
+        'Eletrônicos',
+        'Alimentos',
+        'Bebidas',
+        'Doméstico',
+        'Ferramentas',
+        'Automotivo', 
+        'Papelaria',
+        'Saúde e Beleza',
+        'Outros',
+    ];
+
+    foreach ($categories as $name) {
+        \App\Models\Category::create(['name' => $name]);
+    }}
 }
+ 
