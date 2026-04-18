@@ -67,11 +67,12 @@
           <p class="text-xl text-violet-200 mt-4">Sincronizando banco de dados...</p>
         </div>
 
-        <div v-else class="p-6">
+        <div v-else class="p-4 md:p-6">
           
           <div class="hidden md:block">
             <DataTable :value="products" responsiveLayout="scroll" :pt="{ root: { class: 'custom-table' } }">
-              <Column header="Foto" style="width: 15%" class="text-center">
+              <Column style="width: 15%">
+                <template #header><div class="w-full text-center">Foto</div></template>
                 <template #body="slotProps">
                   <div class="flex justify-center py-2">
                     <img v-if="slotProps.data.image" :src="slotProps.data.image" class="w-24 h-24 object-cover rounded-2xl border-2 border-[#3d1d85] shadow-xl" @error="onImageError" />
@@ -82,7 +83,8 @@
                 </template>
               </Column>
 
-              <Column header="Categoria" style="width: 15%" class="text-center">
+              <Column style="width: 15%">
+                <template #header><div class="w-full text-center">Categoria</div></template>
                 <template #body="slotProps">
                   <div class="flex justify-center">
                     <span v-if="slotProps.data.category" class="text-[10px] bg-violet-900/50 text-white px-3 py-1 rounded-full border border-violet-500 uppercase font-bold tracking-wider">
@@ -93,33 +95,37 @@
                 </template>
               </Column>
 
-              <Column field="name" header="Produto" style="width: 25%" class="text-center">
+              <Column style="width: 25%">
+                <template #header><div class="w-full text-center">Produto</div></template>
                 <template #body="slotProps">
-                  <div class="font-bold text-white text-xl">{{ slotProps.data.name }}</div>
-                  <div class="text-sm text-violet-300/70 italic line-clamp-1">{{ slotProps.data.description || 'Sem descrição' }}</div>
-                </template>
-              </Column>
-
-              <Column field="price" header="Preço" style="width: 15%" class="text-center">
-                <template #body="slotProps">
-                  <span class="text-emerald-400 font-bold text-lg">{{ formatCurrency(slotProps.data.price) }}</span>
-                </template>
-              </Column>
-
-              <Column header="Validade" style="width: 15%" class="text-center">
-                <template #body="slotProps">
-                  <div class="flex flex-col items-center">
-                     <span v-if="slotProps.data.expiration_date" class="text-white font-medium">
-                        {{ formatDate(slotProps.data.expiration_date) }}
-                     </span>
-                     <span v-else class="text-violet-400 font-semibold text-xs uppercase tracking-tighter opacity-80">
-                        Indeterminada
-                     </span>
+                  <div class="flex flex-col items-center text-center">
+                    <div class="font-bold text-white text-xl">{{ slotProps.data.name }}</div>
+                    <div class="text-sm text-violet-300/70 italic line-clamp-1 mt-1">{{ slotProps.data.description || 'Sem descrição' }}</div>
                   </div>
                 </template>
               </Column>
 
-              <Column header="Ações" style="width: 15%" class="text-center">
+              <Column style="width: 15%">
+                <template #header><div class="w-full text-center">Preço</div></template>
+                <template #body="slotProps">
+                  <div class="flex justify-center">
+                    <span class="text-emerald-400 font-bold text-lg">{{ formatCurrency(slotProps.data.price) }}</span>
+                  </div>
+                </template>
+              </Column>
+
+              <Column style="width: 15%">
+                <template #header><div class="w-full text-center">Validade</div></template>
+                <template #body="slotProps">
+                  <div class="flex flex-col items-center justify-center">
+                      <span v-if="slotProps.data.expiration_date" class="text-white font-medium">{{ formatDate(slotProps.data.expiration_date) }}</span>
+                      <span v-else class="text-violet-400 font-semibold text-xs uppercase tracking-tighter opacity-80">Indeterminada</span>
+                  </div>
+                </template>
+              </Column>
+
+              <Column style="width: 15%">
+                <template #header><div class="w-full text-center">Ações</div></template>
                 <template #body="slotProps">
                   <div class="flex gap-4 justify-center">
                     <Button rounded class="!bg-emerald-500 !border-none w-10 h-10 flex items-center justify-center shadow-md !cursor-pointer hover:scale-110 transition-transform" @click="openEditModal(slotProps.data)">
@@ -172,13 +178,13 @@
 
               <div class="w-full grid grid-cols-2 bg-[#11062b]/80 rounded-2xl p-4 border border-[#251052] shadow-inner">
                  <div class="flex flex-col items-center justify-center border-r border-[#251052]/50">
-                   <span class="text-[9px] text-violet-400 uppercase font-black tracking-widest mb-1 opacity-80">Preço</span>
+                   <span class="text-[9px] text-white uppercase font-black tracking-widest mb-1 opacity-80">Preço</span>
                    <span class="text-emerald-400 font-black text-xl tracking-tight">{{ formatCurrency(product.price) }}</span>
                  </div>
                  <div class="flex flex-col items-center justify-center">
-                   <span class="text-[9px] text-violet-400 uppercase font-black tracking-widest mb-1 opacity-80">Validade</span>
+                   <span class="text-[9px] text-white uppercase font-black tracking-widest mb-1 opacity-80">Validade</span>
                    <span v-if="product.expiration_date" class="text-white font-bold text-sm">{{ formatDate(product.expiration_date) }}</span>
-                   <span v-else class="text-violet-400 font-bold text-xs uppercase opacity-70">Não possui</span>
+                   <span v-else class="text-white font-bold text-xs uppercase opacity-70">Não possui</span>
                  </div>
               </div>
             </div>
@@ -200,14 +206,14 @@
         </div>
       </div>
 
-      <Dialog v-model:visible="showModal" modal :header="editingId ? 'Editar Produto' : 'Cadastrar Novo Produto'" :style="{ width: '38rem' }" :pt="{ root: { class: 'custom-dialog' } }">
+      <Dialog v-model:visible="showModal" modal :header="editingId ? 'Editar Produto' : 'Cadastrar Novo Produto'" :style="{ width: '38rem' }" :pt="{ root: { class: 'custom-dialog mx-4' } }">
          <form @submit.prevent="submitProduct" class="flex flex-col gap-6 mt-4">
           <div class="flex flex-col gap-2">
             <label class="text-xs font-bold text-white uppercase tracking-widest">Nome do Produto</label>
             <input v-model="form.name" type="text" maxlength="50" required class="bg-[#11062b] border border-[#251052] rounded-xl p-3 text-white focus:border-violet-500 outline-none" placeholder="Ex: Maçã" />
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex flex-col gap-2">
               <label class="text-xs font-bold text-white uppercase tracking-widest">Preço</label>
               <input 
@@ -222,7 +228,7 @@
 
             <div class="flex flex-col gap-2">
               <label class="text-xs font-bold text-white uppercase tracking-widest">Categoria</label>
-              <Select v-model="form.category_id" :options="categories" optionLabel="name" optionValue="id" placeholder="Selecione..." required class="!bg-[#11062b] !border-[#251052] !rounded-xl !text-white !cursor-pointer" :pt="{ label: { class: '!text-white !p-3' }, dropdown: { class: '!text-violet-400' }, overlay: { class: '!bg-[#11062b] !border-[#251052]' }, item: { class: '!text-white hover:!bg-violet-600/20 !p-3' } }" />
+              <Select v-model="form.category_id" :options="categories" optionLabel="name" optionValue="id" placeholder="Selecione..." required class="!bg-[#11062b] !border-[#251052] !rounded-xl !text-white !cursor-pointer w-full" :pt="{ label: { class: '!text-white !p-3' }, dropdown: { class: '!text-violet-400' }, overlay: { class: '!bg-[#11062b] !border-[#251052]' }, item: { class: '!text-white hover:!bg-violet-600/20 !p-3' } }" />
             </div>
           </div>
 
@@ -246,12 +252,12 @@
             <div v-if="imagePreview" class="flex justify-center mb-2">
               <img :src="imagePreview" class="max-w-full max-h-48 object-contain rounded-2xl border-2 border-violet-500 shadow-2xl" />
             </div>
-            <input @change="handleFileUpload" type="file" accept="image/*" :required="!editingId" class="bg-[#11062b] border border-[#251052] rounded-xl p-3 text-violet-300 file:bg-violet-900 file:text-white file:cursor-pointer" />
+            <input @change="handleFileUpload" type="file" accept="image/*" :required="!editingId" class="bg-[#11062b] border border-[#251052] rounded-xl p-3 text-violet-300 file:bg-violet-900 file:text-white file:cursor-pointer w-full" />
           </div>
 
-          <div class="flex justify-end gap-3 mt-4 pt-6 border-t border-[#251052]">
-            <Button label="Cancelar" text class="text-violet-400 font-bold !cursor-pointer" @click="showModal = false" />
-            <Button :label="editingId ? 'Atualizar' : 'Salvar'" raised type="submit" :loading="isSaving" class="!bg-violet-600 !border-none !text-white font-bold px-8 !cursor-pointer" />
+          <div class="flex flex-col md:flex-row justify-end gap-3 mt-4 pt-6 border-t border-[#251052]">
+            <Button label="Cancelar" text class="text-violet-400 font-bold !cursor-pointer w-full md:w-auto" @click="showModal = false" />
+            <Button :label="editingId ? 'Atualizar' : 'Salvar'" raised type="submit" :loading="isSaving" class="!bg-violet-600 !border-none !text-white font-bold px-8 !cursor-pointer w-full md:w-auto" />
           </div>
         </form>
       </Dialog>
@@ -497,7 +503,6 @@ const deleteAccount = () => {
 <style>
 .custom-table .p-datatable-wrapper { background: transparent !important; }
 
-/* A única regra necessária para centrar os cabeçalhos do PrimeVue sem o partir */
 .custom-table .p-datatable-thead > tr > th .p-column-header-content { 
   justify-content: center !important; 
 }
@@ -514,7 +519,6 @@ const deleteAccount = () => {
 .custom-table .p-datatable-tbody > tr:hover { background: rgba(37, 16, 82, 0.3) !important; }
 .custom-table .p-datatable-tbody > tr > td { border-bottom: 1px solid #251052 !important; padding: 1.5rem 1rem !important; }
 
-/* Estilo unificado para DIALOGS (Cadastro e Confirmação) */
 .custom-dialog { 
   background: #1a0b3b !important; 
   border: 1px solid #251052 !important; 
