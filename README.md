@@ -31,10 +31,10 @@ A aplicação segue padrões de arquitetura profissional, utilizando o **Service
 
 ## Tecnologias Utilizadas
 
-- **Backend:** PHP 8.5 / Laravel 11  
+- **Backend:** PHP 8.5 / Laravel 13 
 - **Banco de Dados:** MySQL 8.4 (Docker)  
 - **Infra:** Laravel Sail & Adminer (Gestão Web do Banco)  
-- **Frontend:** Vue 3 (Composition API) / Vite  
+- **Frontend:** VueJS 3 (Composition API) / Vite  
 - **TypeScript:** Tipagem estática no frontend  
 - **Gerenciamento de Estado:** Pinia  
 - **Estilização:** Tailwind CSS 4 & PrimeVue  
