@@ -43,13 +43,13 @@
       </div>
     </nav>
 
-    <main class="p-8 max-w-7xl mx-auto">
+    <main class="p-4 md:p-8 max-w-7xl mx-auto">
       <header class="flex justify-between items-end mb-10">
         <div>
           <h2 class="text-4xl font-black text-white mb-2">Produtos</h2>
-          <p class="text-violet-300 text-lg">Gerencie seu estoque!</p>
+          <p class="text-violet-300 text-lg">Gerenciamento completo de estoque.</p>
         </div>
-        <Button label="Cadastrar Produto" icon="pi pi-plus" raised class="!bg-emerald-500 !border-none px-6 py-3 font-bold !cursor-pointer" @click="openCreateModal" />
+        <Button label="Adicionar Novo" icon="pi pi-plus" raised class="!bg-emerald-500 !border-none px-6 py-3 font-bold !cursor-pointer" @click="openCreateModal" />
       </header>
 
       <div class="flex flex-col md:flex-row gap-4 mb-10">
@@ -68,81 +68,127 @@
         </div>
 
         <div v-else class="p-6">
-          <DataTable :value="products" responsiveLayout="scroll" :pt="{ root: { class: 'custom-table' } }">
-            <Column style="width: 15%">
-              <template #header><div class="w-full text-center">Foto</div></template>
-              <template #body="slotProps">
-                <div class="flex justify-center py-2">
-                  <img v-if="slotProps.data.image" :src="slotProps.data.image" class="w-24 h-24 object-cover rounded-2xl border-2 border-[#3d1d85] shadow-xl" @error="onImageError" />
-                  <div v-else class="w-24 h-24 bg-[#251052]/50 rounded-2xl flex items-center justify-center border-2 border-dashed border-[#3d1d85]">
-                    <i class="pi pi-image text-violet-400 text-3xl"></i>
+          
+          <div class="hidden md:block">
+            <DataTable :value="products" responsiveLayout="scroll" :pt="{ root: { class: 'custom-table' } }">
+              <Column header="Foto" style="width: 15%" class="text-center">
+                <template #body="slotProps">
+                  <div class="flex justify-center py-2">
+                    <img v-if="slotProps.data.image" :src="slotProps.data.image" class="w-24 h-24 object-cover rounded-2xl border-2 border-[#3d1d85] shadow-xl" @error="onImageError" />
+                    <div v-else class="w-24 h-24 bg-[#251052]/50 rounded-2xl flex items-center justify-center border-2 border-dashed border-[#3d1d85]">
+                      <i class="pi pi-image text-violet-400 text-3xl"></i>
+                    </div>
                   </div>
-                </div>
-              </template>
-            </Column>
+                </template>
+              </Column>
 
-            <Column style="width: 15%">
-              <template #header><div class="w-full text-center">Categoria</div></template>
-              <template #body="slotProps">
-                <div class="flex justify-center">
-                  <span v-if="slotProps.data.category" class="text-[10px] bg-violet-900/50 text-white px-3 py-1 rounded-full border border-violet-500 uppercase font-bold tracking-wider">
-                    {{ slotProps.data.category.name }}
-                  </span>
-                  <span v-else class="text-[10px] text-violet-400 border border-dashed border-violet-500/50 px-3 py-1 rounded-full uppercase">Indefinida</span>
-                </div>
-              </template>
-            </Column>
+              <Column header="Categoria" style="width: 15%" class="text-center">
+                <template #body="slotProps">
+                  <div class="flex justify-center">
+                    <span v-if="slotProps.data.category" class="text-[10px] bg-violet-900/50 text-white px-3 py-1 rounded-full border border-violet-500 uppercase font-bold tracking-wider">
+                      {{ slotProps.data.category.name }}
+                    </span>
+                    <span v-else class="text-[10px] text-violet-400 border border-dashed border-violet-500/50 px-3 py-1 rounded-full uppercase">Indefinida</span>
+                  </div>
+                </template>
+              </Column>
 
-            <Column style="width: 25%">
-              <template #header><div class="w-full text-center">Produto</div></template>
-              <template #body="slotProps">
-                <div class="flex flex-col items-center text-center">
+              <Column field="name" header="Produto" style="width: 25%" class="text-center">
+                <template #body="slotProps">
                   <div class="font-bold text-white text-xl">{{ slotProps.data.name }}</div>
-                  <div class="text-sm text-violet-300/70 italic line-clamp-1 mt-1">{{ slotProps.data.description || 'Sem descrição' }}</div>
-                </div>
-              </template>
-            </Column>
+                  <div class="text-sm text-violet-300/70 italic line-clamp-1">{{ slotProps.data.description || 'Sem descrição' }}</div>
+                </template>
+              </Column>
 
-            <Column style="width: 15%">
-              <template #header><div class="w-full text-center">Preço</div></template>
-              <template #body="slotProps">
-                <div class="flex justify-center">
+              <Column field="price" header="Preço" style="width: 15%" class="text-center">
+                <template #body="slotProps">
                   <span class="text-emerald-400 font-bold text-lg">{{ formatCurrency(slotProps.data.price) }}</span>
+                </template>
+              </Column>
+
+              <Column header="Validade" style="width: 15%" class="text-center">
+                <template #body="slotProps">
+                  <div class="flex flex-col items-center">
+                     <span v-if="slotProps.data.expiration_date" class="text-white font-medium">
+                        {{ formatDate(slotProps.data.expiration_date) }}
+                     </span>
+                     <span v-else class="text-violet-400 font-semibold text-xs uppercase tracking-tighter opacity-80">
+                        Indeterminada
+                     </span>
+                  </div>
+                </template>
+              </Column>
+
+              <Column header="Ações" style="width: 15%" class="text-center">
+                <template #body="slotProps">
+                  <div class="flex gap-4 justify-center">
+                    <Button rounded class="!bg-emerald-500 !border-none w-10 h-10 flex items-center justify-center shadow-md !cursor-pointer hover:scale-110 transition-transform" @click="openEditModal(slotProps.data)">
+                      <i class="pi pi-pencil text-white text-sm"></i>
+                    </Button>
+                    <Button rounded class="!bg-red-600 !border-none w-10 h-10 flex items-center justify-center shadow-md !cursor-pointer hover:scale-110 transition-transform" @click="deleteProduct(slotProps.data.id)">
+                      <i class="pi pi-trash text-white text-sm"></i>
+                    </Button>
+                  </div>
+                </template>
+              </Column>
+
+              <template #empty>
+                <div class="text-center p-10 text-violet-300">
+                    <i class="pi pi-box text-5xl block mb-4 opacity-20"></i>
+                    <p class="text-xl font-medium">Nenhum produto encontrado.</p>
                 </div>
               </template>
-            </Column>
+            </DataTable>
+          </div>
 
-            <Column style="width: 15%">
-              <template #header><div class="w-full text-center">Validade</div></template>
-              <template #body="slotProps">
-                <div class="flex flex-col items-center justify-center">
-                    <span v-if="slotProps.data.expiration_date" class="text-white font-medium">{{ formatDate(slotProps.data.expiration_date) }}</span>
-                    <span v-else class="text-violet-400 font-semibold text-xs uppercase tracking-tighter opacity-80">Indeterminada</span>
+          <div class="block md:hidden space-y-6">
+            <div v-for="product in products" :key="product.id" class="bg-[#1a0b3b]/80 border border-[#251052] rounded-[2rem] p-6 shadow-xl relative flex flex-col items-center">
+              
+              <div class="w-full flex justify-between items-start mb-2">
+                <div class="z-10">
+                  <span v-if="product.category" class="text-[10px] bg-violet-900/80 text-white px-3 py-1.5 rounded-full border border-violet-500 uppercase font-black tracking-wider shadow-lg">
+                    {{ product.category.name }}
+                  </span>
+                  <span v-else class="text-[10px] text-violet-400 bg-[#251052]/50 px-3 py-1.5 rounded-full border border-dashed border-violet-500/50 uppercase font-bold shadow-lg">Indefinida</span>
                 </div>
-              </template>
-            </Column>
-
-            <Column style="width: 15%">
-              <template #header><div class="w-full text-center">Ações</div></template>
-              <template #body="slotProps">
-                <div class="flex gap-4 justify-center">
-                  <Button rounded class="!bg-emerald-500 !border-none w-10 h-10 flex items-center justify-center shadow-md !cursor-pointer hover:scale-110 transition-transform" @click="openEditModal(slotProps.data)">
-                    <i class="pi pi-pencil text-white text-sm"></i>
-                  </Button>
-                  <Button rounded class="!bg-red-600 !border-none w-10 h-10 flex items-center justify-center shadow-md !cursor-pointer hover:scale-110 transition-transform" @click="deleteProduct(slotProps.data.id)">
-                    <i class="pi pi-trash text-white text-sm"></i>
-                  </Button>
+                
+                <div class="flex gap-2 z-10">
+                  <button @click="openEditModal(product)" class="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 w-9 h-9 rounded-xl border border-emerald-500/30 flex items-center justify-center transition-colors shadow-lg backdrop-blur-sm"><i class="pi pi-pencil text-sm"></i></button>
+                  <button @click="deleteProduct(product.id)" class="bg-red-600/10 text-red-400 hover:bg-red-600/20 w-9 h-9 rounded-xl border border-red-500/30 flex items-center justify-center transition-colors shadow-lg backdrop-blur-sm"><i class="pi pi-trash text-sm"></i></button>
                 </div>
-              </template>
-            </Column>
-
-            <template #empty>
-              <div class="text-center p-10 text-violet-300">
-                  <i class="pi pi-box text-5xl block mb-4 opacity-20"></i>
-                  <p class="text-xl font-medium">Nenhum produto encontrado.</p>
               </div>
-            </template>
-          </DataTable>
+
+              <div class="mt-4 mb-5">
+                <img v-if="product.image" :src="product.image" class="w-36 h-36 object-cover rounded-full border-4 border-[#3d1d85] shadow-[0_0_20px_rgba(139,92,246,0.2)]" @error="onImageError" />
+                <div v-else class="w-36 h-36 bg-[#251052]/50 rounded-full flex items-center justify-center border-4 border-dashed border-[#3d1d85] shadow-inner">
+                  <i class="pi pi-image text-violet-400 text-5xl opacity-50"></i>
+                </div>
+              </div>
+
+              <div class="text-center mb-6 w-full px-2">
+                <h3 class="font-black text-white text-[26px] leading-tight mb-2 truncate">{{ product.name }}</h3>
+                <p class="text-sm text-violet-300/60 italic line-clamp-2 px-4">{{ product.description || 'Sem descrição' }}</p>
+              </div>
+
+              <div class="w-full grid grid-cols-2 bg-[#11062b]/80 rounded-2xl p-4 border border-[#251052] shadow-inner">
+                 <div class="flex flex-col items-center justify-center border-r border-[#251052]/50">
+                   <span class="text-[9px] text-violet-400 uppercase font-black tracking-widest mb-1 opacity-80">Preço</span>
+                   <span class="text-emerald-400 font-black text-xl tracking-tight">{{ formatCurrency(product.price) }}</span>
+                 </div>
+                 <div class="flex flex-col items-center justify-center">
+                   <span class="text-[9px] text-violet-400 uppercase font-black tracking-widest mb-1 opacity-80">Validade</span>
+                   <span v-if="product.expiration_date" class="text-white font-bold text-sm">{{ formatDate(product.expiration_date) }}</span>
+                   <span v-else class="text-violet-400 font-bold text-xs uppercase opacity-70">Não possui</span>
+                 </div>
+              </div>
+            </div>
+
+            <div v-if="products.length === 0" class="text-center py-16 px-6 text-violet-300 border border-dashed border-[#251052] rounded-3xl bg-[#1a0b3b]/30">
+                <i class="pi pi-box text-6xl block mb-6 opacity-20"></i>
+                <h3 class="text-2xl font-bold text-white mb-2">Poxa, vazio!</h3>
+                <p class="text-sm font-medium">Você ainda não cadastrou nenhum produto.</p>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -182,7 +228,7 @@
 
           <div class="bg-[#1a0b3b]/50 p-4 rounded-xl border border-[#251052]">
             <div class="flex items-center gap-3 mb-3">
-              <input type="checkbox" v-model="hasExpiration" :disabled="isFoodCategory" id="hasExp" class="w-5 h-5 bg-white accent-emerald-500 cursor-pointer disabled:opacity-50" />
+              <input type="checkbox" v-model="hasExpiration" :disabled="isFoodCategory" id="hasExp" class="w-5 h-5 bg-white accent-emerald-500 cursor-pointer disabled:opacity-50 rounded" />
               <label for="hasExp" class="text-sm font-bold text-white cursor-pointer">Possui validade?</label>
             </div>
             <div v-if="hasExpiration" class="flex flex-col gap-2 animate-fadein">
@@ -253,17 +299,14 @@ const form = ref({
   image: null as File | null 
 });
 
-// Ref para armazenar e exibir o preço com formatação visual
 const displayPrice = ref('');
 
-// Função para formatar o número como moeda do Brasil (R$)
 const formatCurrency = (value: string | number) => {
   if (!value) return 'R$ 0,00';
   const numericValue = typeof value === 'string' ? parseFloat(value) : value;
   return numericValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
-// Lógica de digitação: aplica a máscara à medida que se digita
 const onPriceInput = (e: any) => {
   let rawValue = e.target.value.replace(/\D/g, '');
 
@@ -340,7 +383,7 @@ const openCreateModal = () => {
   editingId.value = null;
   imagePreview.value = null;
   hasExpiration.value = false;
-  displayPrice.value = ''; // Limpa o preço visual
+  displayPrice.value = ''; 
   form.value = { name: '', description: '', price: '', expiration_date: '', category_id: '', image: null };
   showModal.value = true;
 };
