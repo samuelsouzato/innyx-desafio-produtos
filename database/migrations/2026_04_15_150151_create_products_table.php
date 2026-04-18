@@ -19,6 +19,7 @@ return new class extends Migration
         $table->date('expiration_date')->nullable();;   // Data de validade
         $table->string('image')->unique();  // Imagem
         $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+        $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
         $table->timestamps();
     });
     }
