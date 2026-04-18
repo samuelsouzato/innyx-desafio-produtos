@@ -7,7 +7,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 
 Route::get('/{any?}', function () {
-    return view('app'); 
+    return view('welcome');
 })->where('any', '.*');
 // Agrupamos tudo dentro do prefixo 'v1'
 Route::prefix('v1')->group(function () {
