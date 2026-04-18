@@ -36,10 +36,11 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        // filtra apenas os produtos do utilizador logado!
+        
         $query = \App\Models\Product::where('user_id', auth()->id())->with('category'); 
 
-        if ($request->has('search')) {
+        
+        if ($request->has('search') && $request->search != '') {
             $search = $request->input('search');
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -47,7 +48,9 @@ class ProductController extends Controller
             });
         }
 
-        
+        if ($request->has('category_id') && $request->category_id != null && $request->category_id != '') {
+            $query->where('category_id', $request->category_id);
+        }
 
         return response()->json($query->paginate(5));
     }

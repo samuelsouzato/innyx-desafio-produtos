@@ -21,7 +21,7 @@
               type="email" 
               required 
               class="w-full bg-[#11062b] border border-[#251052] rounded-xl py-3 pl-12 pr-4 text-white focus:border-violet-500 outline-none transition-all" 
-              placeholder="admin@innyx.com" 
+              placeholder="nome@email.com" 
             />
           </div>
         </div>
@@ -32,11 +32,19 @@
             <i class="pi pi-lock absolute left-4 top-1/2 -translate-y-1/2 text-violet-400"></i>
             <input 
               v-model="password" 
-              type="password" 
+              :type="showPassword ? 'text' : 'password'" 
               required 
-              class="w-full bg-[#11062b] border border-[#251052] rounded-xl py-3 pl-12 pr-4 text-white focus:border-violet-500 outline-none transition-all" 
+              class="w-full bg-[#11062b] border border-[#251052] rounded-xl py-3 pl-12 pr-12 text-white focus:border-violet-500 outline-none transition-all" 
               placeholder="••••••••" 
             />
+            
+            <button 
+              type="button"
+              @click="showPassword = !showPassword"
+              class="absolute right-4 top-1/2 -translate-y-1/2 text-violet-400 hover:text-white transition-colors focus:outline-none"
+            >
+              <i :class="['pi', showPassword ? 'pi-eye' : 'pi-eye-slash']"></i>
+            </button>
           </div>
         </div>
 
@@ -72,6 +80,7 @@ const toast = useToast();
 const email = ref('');
 const password = ref('');
 const loading = ref(false);
+const showPassword = ref(false);
 
 const handleLogin = async () => {
   try {
