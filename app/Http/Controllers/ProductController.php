@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
     protected $productService;
-
     public function __construct(ProductService $productService) 
     {
         $this->productService = $productService;
     }
-
     public function store(Request $request)
     {
+        // Valida os dados enviados pelo usuário na requisição HTTP
         $validated = $request->validate([
             'name'            => 'required|min:3|max:50',            
             'description'     => 'nullable|max:200',                
@@ -27,8 +26,10 @@ class ProductController extends Controller
         ]);
 
         try {
+            // repassa os dados validados para o Serviço fazer a criação no banco e salvar a imagem
             $product = $this->productService->createProduct($validated);
             return response()->json($product, 201);
+            
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
@@ -36,28 +37,16 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        
-        $query = \App\Models\Product::where('user_id', auth()->id())->with('category'); 
+        // O controller só passa o ID do usuário logado e os parâmetros da URL (search, category_id)
+        $products = $this->productService->listProducts(auth()->id(), $request->all());
 
-        
-        if ($request->has('search') && $request->search != '') {
-            $search = $request->input('search');
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->has('category_id') && $request->category_id != null && $request->category_id != '') {
-            $query->where('category_id', $request->category_id);
-        }
-
-        return response()->json($query->paginate(5));
+        return response()->json($products);
     }
 
     public function update(Request $request, $id)
     {
-        $product = \App\Models\Product::where('user_id', auth()->id())->findOrFail($id);
+        // Garante de forma segura que o produto existe e pertence ao usuário logado
+        $product = Product::where('user_id', auth()->id())->findOrFail($id);
 
         $validated = $request->validate([
             'name'            => 'sometimes|min:3|max:50',            
@@ -69,7 +58,9 @@ class ProductController extends Controller
         ]);
 
         try {
+            // manda o Produto encontrado e os dados novos para o Serviço atualizar
             $product = $this->productService->updateProduct($product, $validated);
+            
             return response()->json($product);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);
@@ -78,14 +69,12 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-        $product = \App\Models\Product::where('user_id', auth()->id())->findOrFail($id);
+        // garante que o usuário logado é o dono do produto antes de permitir apagar
+        $product = Product::where('user_id', auth()->id())->findOrFail($id);
         
-        // 💡 Novamente: getRawOriginal para deletar o arquivo físico corretamente
-        if ($product->getRawOriginal('image')) {
-            Storage::disk('public')->delete($product->getRawOriginal('image'));
-        }
+        // repassa o produto para o Serviço apagar do Banco de Dados
+        $this->productService->deleteProduct($product);
         
-        $product->delete();
         return response()->json(['message' => 'Produto removido com sucesso']);
     }
 }

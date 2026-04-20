@@ -6,6 +6,8 @@
 .phpactor.json
 .phpunit.result.cache
 /.cursor/
+/public/build
+/public/assets
 /.idea
 /.nova
 /.phpunit.cache

@@ -1,101 +1,80 @@
-# 📦 Sistema de Gestão de Produtos - Fullstack
+# Sistema de Gestão de Produtos - Fullstack
 
 ## Visão Geral
 
-Este projeto é uma **API RESTful** desenvolvida com **Laravel 11**, **MySQL** e **Docker (Sail)**, integrada a um frontend em **Vue 3**.  
-A aplicação segue padrões de arquitetura profissional, utilizando o **Service Pattern** para isolar a lógica de negócio, autenticação **Sanctum**, gerenciamento de estado com **Pinia** e interface responsiva utilizando **Tailwind CSS 4** e **PrimeVue**.
+Este projeto é uma **API RESTful** desenvolvida com **Laravel 11**, **MySQL 8.4** e **Docker (Sail)**, integrada a um frontend em **Vue 3**. 
 
-## 📂 Estrutura do Projeto
+A aplicação foi desenhada seguindo as melhores práticas do mercado, adotando o **Service Pattern** no backend para isolar a regra de negócio dos Controladores. No frontend, utiliza **TypeScript** para garantir a segurança dos tipos, autenticação por token (Sanctum), gerenciamento de estado global com **Pinia**, e uma interface responsiva com **PrimeVue** e **Tailwind CSS**.
+
+---
+
+## Tecnologias e Ferramentas
+
+### Backend
+* **PHP 8.5 & Laravel 13:** Frameworks robustos escolhidos pela sua velocidade de desenvolvimento, segurança embutida e ORM poderoso (Eloquent).
+* **MySQL 8.4:** Banco de dados padrão da indústria.
+* **Laravel Sail (Docker):** Utilizado para padronizar o ambiente de desenvolvimento, permitindo que o projeto rode apenas com o comando `docker compose up -d` sem a necessidade de instalar PHP ou MySQL localmente na máquina do desenvolvedor.
+* **Laravel Sanctum:** Escolhido para fornecer um sistema leve e seguro de autenticação baseada em tokens (SPA/API).
+
+### Frontend
+* **VueJS 3:** Utilizado Coforme Exigido.
+* **TypeScript:** Utilizado Coforme Exigido.
+* **Pinia:** A biblioteca moderna de gestão de estado do Vue, utilizada para manter a persistência do usuário logado e os tokens de autenticação.
+* **Tailwind CSS:** Utilizado para criar um design responsivo e customizado de forma ágil, diretamente no código.
+* **PrimeVue:** Biblioteca de componentes de UI escolhida para acelerar a construção de interfaces complexas e interativas, como DataTables (com paginação embutida), modais, dropdowns e alertas visuais (Toasts/Confirms).
+* **Axios:** Cliente HTTP utilizado pela sua simplicidade na interceção de requisições e injeção automática do Bearer Token.
+
+---
+
+## Estrutura do Projeto
 
 ```text
 /
 ├── app/
 │   ├── Http/Controllers/  # Controllers da API v1 (Auth, Product, Category)
-│   ├── Services/          # Service Pattern (ProductService - Lógica de Negócio)
-│   └── Models/            # Entidades do Banco (Product, Category, User)
+│   ├── Services/          # Service Pattern (ProductService, AuthService - Lógica de Negócio)
+│   └── Models/            # Entidades e Relacionamentos (Product, Category, User)
 ├── database/
-│   ├── migrations/        # Estrutura do banco (campos nullable configurados)
-│   └── seeders/           # Dados de teste (Admin e 9 Categorias resumidas)
+│   ├── migrations/        # Estrutura do banco de dados e regras de campos nulos
+│   └── seeders/           # Dados de teste iniciais (Usuário Admin e 9 Categorias)
 ├── routes/
-│   └── api.php            # Definição dos endpoints da API protegidos
-├── compose.yaml           # Configuração da infra Docker (Sail)
+│   └── api.php            # Definição dos endpoints da API RESTful protegidos
+├── compose.yaml           # Configuração de infraestrutura Docker (Laravel Sail)
 │
 └── frontend/
     ├── src/
-    │   ├── services/      # Comunicação com API (Axios)
-    │   ├── stores/        # Pinia (Gerenciamento de Auth e Estado)
-    │   ├── router/        # Gerenciamento de rotas SPA
-    │   └── views/         # Páginas (LoginView, DashboardView)
-    └── package.json       # Dependências (PrimeVue, Tailwind 4, Pinia)
-```
-
-## Tecnologias Utilizadas
-
-- **Backend:** PHP 8.5 / Laravel 13 
-- **Banco de Dados:** MySQL 8.4 (Docker)  
-- **Infra:** Laravel Sail & Adminer (Gestão Web do Banco)  
-- **Frontend:** VueJS 3 (Composition API) / Vite  
-- **TypeScript:** Tipagem estática no frontend  
-- **Gerenciamento de Estado:** Pinia  
-- **Estilização:** Tailwind CSS 4 & PrimeVue  
-
----
-
-## Como Executar (Passo a Passo Completo):
-
-# Pré-requesitos:
-- **Docker Desktop** rodando com WSL2 habilitado.
-
-### Ambiente  Linux (WSL2)
-
-No Windows, abra o PowerShell como Administrador:
-
-```bash
-wsl --install
-```
-
-(Reinicie o computador após a instalação. Ao abrir o Ubuntu pela primeira vez, configure usuário e senha.)
-
-#### Garantindo WSL 2
-
-```bash
-wsl --set-default-version 2
-wsl -l -v
-wsl --set-version Ubuntu 2
+    │   ├── services/      # Configuração do Axios e Interceptors
+    │   ├── stores/        # Gerenciamento de Estado (Pinia)
+    │   ├── router/        # Rotas do Vue Router (Guards de Autenticação)
+    │   └── views/         # Interfaces principais (RegisterView, LoginView e DashboardView)
+    └── package.json       # Dependências NPM
 ```
 
 ---
 
-### Configurar o Docker Desktop
+## Como Executar o Projeto
 
-- Instale o Docker Desktop  
-- Vá em **Settings > General** → ative *Use the WSL 2 based engine*  
-- Vá em **Resources > WSL Integration** → ative o Ubuntu  
-- Clique em *Apply & Restart*
+### Pré-requisitos:
+
+- Docker Desktop em execução  
+- WSL2 habilitado (para usuários de Windows)  
+
+**Aviso:** Recomenda-se utilizar o terminal do Ubuntu (WSL).
 
 ---
 
-### 1. Clonar o Repositório (dentro do Linux)
+### Passo 1: Clonar e Configurar o Ambiente
 
 ```bash
-cd ~
-
 git clone https://github.com/samuelsouzato/innyx-desafio-produtos.git
-
 cd innyx-desafio-produtos
-```
 
----
-
-### 2. Configurar ambiente
-
-```bash
 cp .env.example .env
 ```
 
 ---
 
-### 3. Instalar dependências e subir containers
+### Passo 2: Instalar Dependências do PHP via Docker
 
 ```bash
 docker run --rm \
@@ -104,93 +83,239 @@ docker run --rm \
     -w /var/www/html \
     laravelsail/php83-composer:latest \
     composer install --ignore-platform-reqs
-
-./vendor/bin/sail up -d
 ```
-- Demora em torno de 15 minutos.
+
 ---
 
-### 4. Inicializar Banco de Dados e Storage
+### Passo 3: Subir os Containers
+
+```bash
+./vendor/bin/sail up -d
+```
+
+---
+
+### Passo 4: Preparar Banco e Storage
 
 ```bash
 ./vendor/bin/sail artisan key:generate
-
 ./vendor/bin/sail artisan migrate:refresh --seed
-
 ./vendor/bin/sail artisan storage:link
 ```
 
 ---
 
-### 5. Rodar o Frontend
+### Passo 5: Rodar o Frontend
 
 ```bash
 ./vendor/bin/sail npm --prefix frontend install
-./vendor/bin/sail npm --prefix frontend run dev -- --host
+./vendor/bin/sail npm --prefix frontend run dev
 ```
 
 ---
 
-### 6. Credenciais de Acesso
+### Passo 6: Acessar a Aplicação
 
-- **URL:** http://localhost:5173  
+- **URL:** http://localhost  
 - **Usuário:** admin@innyx.com  
 - **Senha:** admin1234  
 
 ---
 
-## Funcionalidades e Diferenciais
-
-- **UX Inteligente (Alimentos):**  
-  Categoria "Alimentos" exige validade automaticamente.
+## Funcionalidades e Diferenciais Implementados
 
 - **Service Pattern:**  
-  Lógica centralizada no `ProductService`, incluindo validações e upload de imagens.
+  Lógica isolada no `ProductService`.
 
-- **Tratamento de Preço:**  
-  Aceita vírgula (BR) e converte para padrão SQL automaticamente.
+- **UX Inteligente:**  
+  Categoria "Alimentos" exige validade automaticamente.
 
-- **Dashboard Premium:**  
-  Paginação (5 itens), busca com debounce e filtros inteligentes.
+- **Busca + Paginação Server-Side:**  
+  Backend com filtro por nome/descrição + debounce no frontend.
 
-- **Flexibilidade:**  
-  Campos opcionais (nullable), respeitando regras de negócio.
+- **Upload de Imagens:**  
+  Nome único + remoção automática ao deletar/substituir.
+
+- **Isolamento de Dados:**  
+  Cada usuário acessa apenas seus próprios produtos.
 
 ---
 
-## Comandos Úteis do Sail
+## Arquitetura e Modelagem
+
+### 1. Modelo Entidade-Relacionamento (MER)
+
+```mermaid
+erDiagram
+    USER ||--o{ PRODUCT : "cadastra/gerencia"
+    CATEGORY ||--o{ PRODUCT : "classifica"
+
+    USER {
+        bigint id PK
+        string name
+        string email
+        string password
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    CATEGORY {
+        bigint id PK
+        string name "max: 100"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    PRODUCT {
+        bigint id PK
+        bigint user_id FK
+        bigint category_id FK
+        string name "max: 50"
+        string description "max: 200"
+        double price "min: 0.01"
+        date expiration_date
+        string image
+        timestamp created_at
+        timestamp updated_at
+    }
+```
+
+### 2. Diagrama de Casos de Uso
+
+```mermaid
+flowchart LR
+    V((Visitante))
+    U((Usuário Autenticado))
+
+    subgraph Autenticação
+        CAD(Criar Conta)
+        LOG(Fazer Login)
+    end
+
+    subgraph Gestão de Produtos
+        LIST(Listar Produtos Paginados)
+        BUS(Buscar por Nome/Descrição)
+        CREA(Cadastrar Novo Produto)
+        EDIT(Editar Produto)
+        DEL(Excluir Produto)
+        LOGOUT(Sair da Plataforma)
+    end
+
+    V --> CAD
+    V --> LOG
+
+    U --> LIST
+    U --> BUS
+    U --> CREA
+    U --> EDIT
+    U --> DEL
+    U --> LOGOUT
+```
+
+### 3. Diagrama de Classes (Backend)
+
+```mermaid
+classDiagram
+    class AuthController {
+        +register(Request) Response
+        +login(Request) Response
+        +logout(Request) Response
+    }
+
+    class ProductController {
+        +index(Request) ResourceCollection
+        +store(Request) JsonResponse
+        +update(Request, id) JsonResponse
+        +destroy(id) JsonResponse
+    }
+
+    class CategoryController {
+        +index() JsonResponse
+    }
+
+    class ProductService {
+        +createProduct(array data) Product
+        +updateProduct(Product product, array data) Product
+    }
+
+    class Product {
+        +int id
+        +int user_id
+        +int category_id
+        +String name
+        +float price
+        +String image
+        +user() BelongsTo
+        +category() BelongsTo
+    }
+
+    class User {
+        +String name
+        +String email
+        +products() HasMany
+    }
+
+    class Category {
+        +String name
+        +products() HasMany
+    }
+
+    ProductController --> ProductService : Delega Lógica de Negócio (Upload/Validade)
+    ProductService ..> Product : Manipula instâncias
+    Product "*" -- "1" User : Pertence a
+    Product "*" -- "1" Category : Possui
+```
+
+---
+
+## Comandos Auxiliares
 
 ```bash
 ./vendor/bin/sail stop
-./vendor/bin/sail restart
-./vendor/bin/sail mysql
-```
 
-- **Adminer:** http://localhost:8080  
-    - Server/Host: mysql  
-    - User: sail  
-    - Pass: password  
-
----
-
-## Endpoints da API (v1)
-
-- **POST** `/api/v1/login` → Autenticação e token  
-- **GET** `/api/v1/products` → Listagem (paginado/busca)  
-- **POST** `/api/v1/products` → Criar produto  
-- **PUT** `/api/v1/products/{id}` → Atualizar produto  
-- **DELETE** `/api/v1/products/{id}` → Remover produto  
-
----
-
-## Observação
-
-Se reiniciar o PC:
-
-```bash
-cd ~/innyx-desafio-produtos
-
+cd innyx-desafio-produtos
 ./vendor/bin/sail up -d
-
-./vendor/bin/sail npm --prefix frontend run dev -- --host
+./vendor/bin/sail npm --prefix frontend run dev
 ```
+
+---
+
+## Adminer (Banco de Dados)
+
+- **URL:** http://localhost:8080  
+- **Servidor:** mysql  
+- **Usuário:** sail  
+- **Senha:** password  
+
+---
+
+## 📡 Rotas do Sistema (Endpoints API v1)
+
+A API utiliza o prefixo `/api/v1/` e todas as rotas de gestão exigem o cabeçalho:
+
+```
+Authorization: Bearer {token}
+```
+
+---
+
+### Autenticação (Públicas)
+
+| Método | Endpoint   | Descrição                                      |
+|--------|------------|-----------------------------------------------|
+| POST   | /register  | Cria um novo usuário no sistema               |
+| POST   | /login     | Valida credenciais e retorna o token de acesso |
+
+---
+
+### Gestão e Recursos (Protegidas)
+
+| Método | Endpoint           | Descrição                                                     |
+|--------|--------------------|---------------------------------------------------------------|
+| GET    | /me                | Retorna os dados do usuário logado                           |
+| POST   | /logout            | Invalida o token atual e encerra a sessão                    |
+| GET    | /categories        | Lista todas as categorias para preenchimento do formulário   |
+| GET    | /products          | Lista produtos do usuário com paginação e busca              |
+| POST   | /products          | Faz upload da imagem e cadastra um novo produto              |
+| PUT    | /products/{id}     | Atualiza dados ou imagem de um produto existente             |
+| DELETE | /products/{id}     | Remove o produto e apaga o ficheiro de imagem do servidor    |
