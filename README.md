@@ -59,7 +59,32 @@ A aplicação foi desenhada seguindo as melhores práticas do mercado, adotando 
 - Docker Desktop em execução  
 - WSL2 habilitado (para usuários de Windows)  
 
-**Aviso:** Recomenda-se utilizar o terminal do Ubuntu (WSL).
+### Ambiente  Linux WSL2 (Se não tiver)
+
+No Windows, abra o PowerShell como Administrador:
+
+```bash
+wsl --install
+```
+
+(Reinicie o computador após a instalação. Ao abrir o Ubuntu pela primeira vez, configure usuário e senha.)
+
+#### Garantindo WSL2
+
+```bash
+wsl --set-default-version 2
+wsl -l -v
+wsl --set-version Ubuntu 2
+```
+
+---
+
+### Configurar o Docker Desktop
+
+- Instale o Docker Desktop  
+- Vá em **Settings > General** → ative *Use the WSL 2 based engine*  
+- Vá em **Resources > WSL Integration** → ative o Ubuntu  
+- Clique em *Apply & Restart*
 
 ---
 
