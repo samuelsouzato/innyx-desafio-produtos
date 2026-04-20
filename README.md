@@ -180,6 +180,8 @@ erDiagram
     }
 ```
 
+---
+
 ### 2. Diagrama de Casos de Uso
 
 ```mermaid
@@ -187,18 +189,19 @@ flowchart LR
     V((Visitante))
     U((Usuário Autenticado))
 
-    subgraph Autenticação
+    subgraph Autenticação e Perfil
         CAD(Criar Conta)
         LOG(Fazer Login)
+        LOGOUT(Sair da Plataforma)
+        DELACC(Excluir Conta e Dados)
     end
 
     subgraph Gestão de Produtos
         LIST(Listar Produtos Paginados)
-        BUS(Buscar por Nome/Descrição)
+        BUS(Buscar por Nome/Categoria)
         CREA(Cadastrar Novo Produto)
         EDIT(Editar Produto)
         DEL(Excluir Produto)
-        LOGOUT(Sair da Plataforma)
     end
 
     V --> CAD
@@ -210,32 +213,48 @@ flowchart LR
     U --> EDIT
     U --> DEL
     U --> LOGOUT
+    U --> DELACC
 ```
 
-### 3. Diagrama de Classes (Backend)
+---
+
+### 3. Diagrama de Classes (Backend - Arquitetura em Camadas)
 
 ```mermaid
 classDiagram
     class AuthController {
-        +register(Request) Response
-        +login(Request) Response
-        +logout(Request) Response
+        +register(Request) JsonResponse
+        +login(Request) JsonResponse
+        +logout(Request) JsonResponse
+        +destroy() JsonResponse
+    }
+
+    class AuthService {
+        +authenticate(array credentials) array
+        +registerUser(array data) User
+        +deleteAccount(User user) void
     }
 
     class ProductController {
-        +index(Request) ResourceCollection
+        +index(Request) JsonResponse
         +store(Request) JsonResponse
         +update(Request, id) JsonResponse
         +destroy(id) JsonResponse
+    }
+
+    class ProductService {
+        +createProduct(array data) Product
+        +listProducts(int userId, array filters) LengthAwarePaginator
+        +updateProduct(Product product, array data) Product
+        +deleteProduct(Product product) bool
     }
 
     class CategoryController {
         +index() JsonResponse
     }
 
-    class ProductService {
-        +createProduct(array data) Product
-        +updateProduct(Product product, array data) Product
+    class CategoryService {
+        +getAllCategories() Collection
     }
 
     class Product {
@@ -260,8 +279,14 @@ classDiagram
         +products() HasMany
     }
 
-    ProductController --> ProductService : Delega Lógica de Negócio (Upload/Validade)
-    ProductService ..> Product : Manipula instâncias
+    AuthController --> AuthService : Delega Lógica de Autenticação
+    ProductController --> ProductService : Delega Lógica de Negócio/Upload
+    CategoryController --> CategoryService : Delega Consultas
+
+    AuthService ..> User : Manipula
+    ProductService ..> Product : Manipula
+    CategoryService ..> Category : Manipula
+
     Product "*" -- "1" User : Pertence a
     Product "*" -- "1" Category : Possui
 ```
